@@ -12,22 +12,20 @@
     <canvas id="myChart" width="400" height="200"></canvas>
 
     <script>
-      const xlables = [];
-      const ytemp = [];
       chartIt();
       async function chartIt() {
-        await getData();
+        const data = await getData();
         const ctx = document.getElementById("myChart").getContext("2d");
 
         const myChart = new Chart(ctx, {
           type: "line",
           data: {
-            labels: xlables,
+            labels: data.xs,
             datasets: [
               {
                 label:
                   "Combined Land-Surface Air and Sea-Surface Water Temperature C°",
-                data: ytemp,
+                data: data.ys,
                 backgroundColor: "rgba(255, 99, 132, 0.2)",
                 borderColor: "rgba(255, 99, 132, 1)",
                 borderWidth: 1,
@@ -40,6 +38,8 @@
       // Mean from: https://earthobservatory.nasa.gov/world-of-change/DecadalTemp
 
       async function getData() {
+        const xs = [];
+        const ys = [];
         const response = await fetch("ZonAnn.Ts+dSST.csv");
         const data = await response.text();
 
@@ -47,11 +47,11 @@
         table.forEach((row) => {
           const columns = row.split(",");
           const year = columns[0];
-          xlables.push(year);
+          xs.push(year);
           const temp = columns[1];
-          ytemp.push(parseFloat(temp) + 14);
-          console.log(year, temp);
+          ys.push(parseFloat(temp) + 14);
         });
+        return { xs, ys };
       }
     </script>
   </body>
