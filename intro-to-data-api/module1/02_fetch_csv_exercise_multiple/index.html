@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.2/dist/chart.min.js"></script>
+    <title>Data and APIs Project 1</title>
+  </head>
+  <body>
+    <h1>Global Average Temperatures 1980-2018</h1>
+    <canvas id="myChart"></canvas>
+
+    <script>
+      setup();
+      async function setup() {
+        const ctx = document.getElementById("myChart").getContext("2d");
+        const dataTemps = await getData();
+        const myChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: dataTemps.years,
+            datasets: [
+              {
+                label: "Global Temperature in °C", // Alt + 0176 degree
+                data: dataTemps.temps,
+                backgroundColor: ["rgba(255, 99, 132, 0.2)"],
+                borderColor: ["rgba(255, 99, 132, 1)"],
+                borderWidth: 1,
+              },
+              {
+                label: "Northern Hemisphere Temperature in °C", // Alt + 0176 degree
+                data: dataTemps.northern,
+                backgroundColor: ["rgba(54, 162, 235, 0.2)"],
+                borderColor: ["rgba(54, 162, 235, 1)"],
+                borderWidth: 1,
+              },
+              {
+                label: "Souther Hemisphere in °C", // Alt + 0176 degree
+                data: dataTemps.southern,
+                backgroundColor: ["rgba(255, 206, 86, 0.2)"],
+                borderColor: ["rgba(255, 206, 86, 1)"],
+                borderWidth: 1,
+              },
+            ],
+          },
+        });
+      }
+
+      async function getData() {
+        const response = await fetch("ZonAnn.Ts+dSST.csv");
+        const data = await response.text();
+        const years = [];
+        const temps = [];
+        const northern = [];
+        const southern = [];
+        const rows = data.split("\n").splice(1);
+        rows.forEach((row) => {
+          const col = row.split(",");
+          years.push(col[0]);
+          temps.push(14 + parseFloat(col[1]));
+          northern.push(14 + parseFloat(col[2]));
+          southern.push(14 + parseFloat(col[3]));
+        });
+        return { years, temps, northern, southern };
+      }
+    </script>
+  </body>
+</html>
